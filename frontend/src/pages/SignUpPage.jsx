@@ -20,7 +20,7 @@ const SignUpPage = () => {
   }
 
   return (
-    <div className='min-h-screen grid lg:grid-cols-2'>
+    <div className='min-h-screen bg-blue-300 grid lg:grid-cols-2'>
       {/* left side */}
       <div className='w-full max-w-md space-y-8'>
         <div className='text-center mb-8'>
