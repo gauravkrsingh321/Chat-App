@@ -11,6 +11,7 @@ const ProfilePage = () => {
     if(!file) return;
 
     //Read this file and render it on UI
+    //Will read about tomorrow
     const reader = new FileReader();
     reader.readAsDataURL(file);
     reader.onload = async () => {
