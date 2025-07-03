@@ -1,5 +1,6 @@
 import { create } from "zustand";
 import { axiosInstance } from "../lib/axios";
+import toast from "react-hot-toast";
 
 //Explanation:
 // Zustand expects a function that returns an object, so use (...) => ({ ... }) to return the initial state.
@@ -25,16 +26,29 @@ import { axiosInstance } from "../lib/axios";
 // authUser = null
 // isCheckingAuth = false
 
+
+//authUser is a state variable in your Zustand store that holds information about the currently logged-in user.
+//Example: authUser = {
+//   id: "123",
+//   name: "Gaurav",
+//   email: "gaurav@example.com",
+//   token: "..." // if returned from backend
+// }
+// ❌ DO NOT send res.cookie('token', token) in signup controller
+// res.status(201).json({ message: "User created" }); // no login behavior
+// Why? Because checkAuth() will automatically detect the cookie and set authUser, which is what you don't want after signup.
+
+
 export const useAuthStore = create((set) => ({ //this objec
   authUser: null,        // initially null
-  isSignUp:false,
-  isLogin:false,
-  isUpdateProfile:false,
+  isSigningUp:false,
+  isLoggingIn:false,
+   isUpdatingProfile:false,
   isCheckingAuth: true,  // initially true
 
   checkAuth: async() => {
     try {
-      const res= axiosInstance.get('/auth/check')
+      const res= await axiosInstance.get('/auth/check')
       set({authUser:res.data})
     } 
     catch(error) {
@@ -46,7 +60,66 @@ export const useAuthStore = create((set) => ({ //this objec
     }
   },
 
-  signup: async(data) => {
-    
+  signup: async(formdata,navigate) => {
+      set({ isSigningUp: true });
+    try {
+      await axiosInstance.post('/auth/signup',formdata);
+      toast.success("Account Created Successfully");
+      // ❌ do NOT set authUser here if you want login page after signup and want to avoid auto login after signup
+      //👇Redirect to login after signup
+      navigate("/login");
+    } 
+    catch (error) {
+      console.log(error);
+      toast.error(error.response.data.message)
+    }
+    finally{
+       set({ isSigningUp: false });
+    }
+  },
+
+  login: async(formdata) => {
+    set({isLoggingIn:true})
+    try {
+       const res = await axiosInstance.post('/auth/login',formdata)
+       set({authUser:res.data});
+       toast.success("Logged In Successfully");
+    } 
+    catch(error) {
+      console.log(error);
+       toast.error(error.response.data.message)
+    }
+    finally {
+      set({ isLoggingIn: false });
+    }
+  },
+
+  logout: async()=>{
+    try {
+       await axiosInstance.post('/auth/logout')
+       set({authUser:null});
+       toast.success("Logged Out Successfully");
+    } 
+    catch (error) {
+       console.log(error);
+       toast.error(error.response.data.message);
+    }
+  },
+
+  updateProfile: async (data) => {
+    set({ isUpdatingProfile:true});
+    try {
+      const res = await axiosInstance.put("/auth/update-profile",data);
+      console.log(res)
+      set({authUser:res.data});
+      toast.success("Profile Updated Successfully");
+    } 
+    catch (error) {
+      console.log(error);
+      toast.error("Error in updating profile")
+    }
+    finally {
+    set({ isUpdatingProfile:false});
+    }
   }
 }));

@@ -1,7 +1,7 @@
 import mongoose from "mongoose";
 
 const userSchema = new mongoose.Schema({
-  fullname:{
+  fullName:{
     type:String,
     required:true,
     trim:true //Automatically remove extra spaces from strings

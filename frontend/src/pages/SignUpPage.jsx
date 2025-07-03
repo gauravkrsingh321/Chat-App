@@ -1,31 +1,43 @@
 import React, { useState } from 'react'
 import { useAuthStore } from '../store/useAuthStore';
-import { Eye, EyeOff, Lock, Mail, MessageSquare, User } from 'lucide-react';
+import { Eye, EyeOff, Loader2, Lock, Mail, MessageSquare, User } from 'lucide-react';
+import { Link, Navigate, useNavigate } from 'react-router';
+import AuthImagePattern from '../components/AuthImagePattern';
+import toast from 'react-hot-toast';
 
 const SignUpPage = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [formData, setFormData] = useState({
-    fullname:"",
+    fullName:"",
     email:"",
     password:""
   })  
-
+  const navigate = useNavigate();
   const {signup,isSigningUp} = useAuthStore()
 
-  const validateForm = ()=>{}
+  const validateForm = () => {
+    if (!formData.fullName.trim()) return toast.error("Full name is required");
+    if (!formData.email.trim()) return toast.error("Email is required");
+    if (!/\S+@\S+\.\S+/.test(formData.email)) return toast.error("Invalid email format");
+    if (!formData.password) return toast.error("Password is required");
+    if (formData.password.length < 6) return toast.error("Password must be at least 6 characters");
 
-  const handleSubmit = (e)=>{
-    console.log(formData)
+    return true;
+  };
+
+  const handleSubmit = (e) => {
     e.preventDefault();
-  }
+    const success = validateForm();
+    if(success === true) signup(formData,navigate);
+  };
 
   return (
-    <div className='min-h-screen bg-blue-300 grid lg:grid-cols-2'>
+    <div className='min-h-screen  grid lg:grid-cols-2'>
       {/* left side */}
-      <div className='w-full max-w-md space-y-8'>
+      <div className='w-full mt-16 lg:mt-8 max-w-md mx-auto space-y-8'>
         <div className='text-center mb-8'>
           {/* LOGO */}
-          <div className='flex flex-col items-center gap-2 group'>
+          <div className='flex flex-col mt-8 lg:mt-18 items-center gap-2 group'>
             <div className='size-12 roundend-xl bg-primary/10 flex items-center justify-center group-hover:bg-primary/20 transition-colors'>
               <MessageSquare className='size-6 text-primary'/>
             </div>
@@ -34,18 +46,18 @@ const SignUpPage = () => {
           </div>
         </div>
 
-        <form onSubmit={handleSubmit} className="space-y-6 px-4">
+        <form onSubmit={handleSubmit} className="space-y-6 px-4 md:px-0">
             <div className="form-control">
               <label className="label">
                 <span className="label-text font-medium">Full Name</span>
               </label>
               <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <User className="size-5 text-base-content/40" />
+                <div className="absolute inset-y-0 left-0 pl-2 flex items-center pointer-events-none">
+                  <User className="size-5 z-2  text-base-content/40" />
                 </div>
                 <input
                   type="text"
-                  className={`input input-bordered w-full pl-4`}
+                  className={`input input-bordered w-full pl-9`}
                   placeholder="John Doe"
                   value={formData.fullName}
                   onChange={(e) => setFormData({ ...formData, fullName: e.target.value })}
@@ -58,12 +70,12 @@ const SignUpPage = () => {
                 <span className="label-text font-medium">Email</span>
               </label>
               <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <Mail className="size-5 text-base-content/40" />
+                <div className="absolute inset-y-0 left-0 pl-2 flex items-center pointer-events-none">
+                  <Mail className="size-5 z-2  text-base-content/40" />
                 </div>
                 <input
                   type="email"
-                  className={`input input-bordered w-full pl-4`}
+                  className={`input input-bordered w-full pl-9`}
                   placeholder="you@example.com"
                   value={formData.email}
                   onChange={(e) => setFormData({ ...formData, email: e.target.value })}
@@ -76,12 +88,12 @@ const SignUpPage = () => {
                 <span className="label-text font-medium">Password</span>
               </label>
               <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <Lock className="size-5 text-base-content/40" />
+                <div className="absolute inset-y-0 left-0 pl-2 flex items-center pointer-events-none">
+                  <Lock className="size-5 z-2 text-base-content/40" />
                 </div>
                 <input
                   type={showPassword ? "text" : "password"}
-                  className={`input input-bordered w-full pl-4`}
+                  className={`input input-bordered w-full pl-9`}
                   placeholder="••••••••"
                   value={formData.password}
                   onChange={(e) => setFormData({ ...formData, password: e.target.value })}
@@ -100,7 +112,7 @@ const SignUpPage = () => {
               </div>
             </div>
 
-            <button type="submit" className="btn btn-primary w-full" disabled={isSigningUp}>
+            <button type="submit" className="btn btn-primary bg-black w-full" disabled={isSigningUp}>
               {isSigningUp ? (
                 <>
                   <Loader2 className="size-5 animate-spin" />
@@ -111,7 +123,23 @@ const SignUpPage = () => {
               )}
             </button>
           </form>
+
+          <div className="text-center">
+            <p className="text-base-content/60">
+              Already have an account?{" "}
+              <Link to="/login" className="link link-primary">
+                Sign in
+              </Link>
+            </p>
+          </div>
       </div>
+
+      {/* right side */}
+      
+      <AuthImagePattern
+        title="Join our community"
+        subtitle="Connect with friends, share moments, and stay in touch with your loved ones."
+      />
     </div>
   )
 }

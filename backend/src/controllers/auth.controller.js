@@ -5,9 +5,9 @@ import { generateToken } from "../lib/utils.js";
 import cloudinary from "../lib/cloudinary.js";
 
 export const signup = async (req,res) => {
-  const {fullname,email,password} = req.body;
+  const {fullName,email,password} = req.body;
   try {
-    if(!fullname || !email || !password) {
+    if(!fullName || !email || !password) {
       return res.status(400).json({message:"Please enter all details"})
     }
     //This check ensures the raw password meets your minimum length requirement before you turn it into a long, meaningless hashed string
@@ -22,11 +22,9 @@ export const signup = async (req,res) => {
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(password,salt);
     //create new user
-    const newUser = await User.create({fullname,email,password:hashedPassword});
+    const newUser = await User.create({fullName,email,password:hashedPassword});
 
     if(newUser) {
-      //generate jwt token here
-      generateToken(newUser._id,res);
       await newUser.save();
       return res.status(201).json({
       message: "User registered successfully",
@@ -59,6 +57,7 @@ export const login = async (req,res) => {
       fullName: user.fullName,
       email: user.email,
       profilePic: user.profilePic,
+      createdAt: user.createdAt
     })
   } 
   catch (error) {
@@ -95,7 +94,7 @@ export const updateProfile = async (req,res) => {
     const updatedUser = await User.findByIdAndUpdate(userId,
       {profilePic:uploadResponse.secure_url},
       {new:true})
-    res.staus(200).json(updatedUser)  
+    res.status(200).json(updatedUser)  
   } 
   catch (error) {
     console.log(error.message)
