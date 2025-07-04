@@ -4,6 +4,7 @@ import { Eye, EyeOff, Loader2, Lock, Mail, MessageSquare, User } from 'lucide-re
 import { Link, Navigate, useNavigate } from 'react-router';
 import AuthImagePattern from '../components/AuthImagePattern';
 import toast from 'react-hot-toast';
+import Input from '../components/Input';
 
 const SignUpPage = () => {
   const [showPassword, setShowPassword] = useState(false);
@@ -55,12 +56,11 @@ const SignUpPage = () => {
                 <div className="absolute inset-y-0 left-0 pl-2 flex items-center pointer-events-none">
                   <User className="size-5 z-2  text-base-content/40" />
                 </div>
-                <input
-                  type="text"
-                  className={`input input-bordered w-full pl-9`}
-                  placeholder="John Doe"
+                <Input
+                  typeOfInput="text"
+                  placeholderValue="John Doe"
                   value={formData.fullName}
-                  onChange={(e) => setFormData({ ...formData, fullName: e.target.value })}
+                  changeHandler={(e) => setFormData({ ...formData, fullName: e.target.value })}
                 />
               </div>
             </div>
@@ -73,12 +73,12 @@ const SignUpPage = () => {
                 <div className="absolute inset-y-0 left-0 pl-2 flex items-center pointer-events-none">
                   <Mail className="size-5 z-2  text-base-content/40" />
                 </div>
-                <input
-                  type="email"
+                <Input
+                  typeOfInput="email"
                   className={`input input-bordered w-full pl-9`}
-                  placeholder="you@example.com"
+                  placeholderValue="you@example.com"
                   value={formData.email}
-                  onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                  changeHandler={(e) => setFormData({ ...formData, email: e.target.value })}
                 />
               </div>
             </div>
@@ -91,12 +91,12 @@ const SignUpPage = () => {
                 <div className="absolute inset-y-0 left-0 pl-2 flex items-center pointer-events-none">
                   <Lock className="size-5 z-2 text-base-content/40" />
                 </div>
-                <input
-                  type={showPassword ? "text" : "password"}
+                <Input
+                  typeOfInput={showPassword ? "text" : "password"}
                   className={`input input-bordered w-full pl-9`}
-                  placeholder="••••••••"
+                  placeholderValue="••••••••"
                   value={formData.password}
-                  onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+                  changeHandler={(e) => setFormData({ ...formData, password: e.target.value })}
                 />
                 <button
                   type="button"

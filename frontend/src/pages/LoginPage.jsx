@@ -3,6 +3,7 @@ import { useAuthStore } from "../store/useAuthStore";
 import AuthImagePattern from "../components/AuthImagePattern";
 import { Link } from "react-router";
 import { Eye, EyeOff, Loader2, Lock, Mail, MessageSquare } from "lucide-react";
+import Input from "../components/Input";
 
 const LoginPage = () => {
   const [showPassword, setShowPassword] = useState(false);
@@ -46,12 +47,12 @@ const LoginPage = () => {
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                   <Mail className="h-5 z-10 w-5 text-base-content/40" />
                 </div>
-                <input
-                  type="email"
+                <Input
+                  typeOfInput="email"
                   className={`input input-bordered w-full pl-10`}
-                  placeholder="you@example.com"
+                  placeholderValue="you@example.com"
                   value={formData.email}
-                  onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                  changeHandler={(e) => setFormData({ ...formData, email: e.target.value })}
                 />
               </div>
             </div>
@@ -64,12 +65,12 @@ const LoginPage = () => {
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                   <Lock className="h-5 z-10 w-5 text-base-content/40" />
                 </div>
-                <input
-                  type={showPassword ? "text" : "password"}
+                <Input
+                  typeOfInput={showPassword ? "text" : "password"}
                   className={`input input-bordered w-full pl-10`}
-                  placeholder="••••••••"
+                  placeholderValue="••••••••"
                   value={formData.password}
-                  onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+                  changeHandler={(e) => setFormData({ ...formData, password: e.target.value })}
                 />
                 <button
                   type="button"
