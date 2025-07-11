@@ -5,8 +5,9 @@ import messageRoutes from "./src/routes/message.route.js";
 import {connectToDB} from "./src/lib/db.js"
 import cookieParser from "cookie-parser";
 import cors from "cors"
+import { app,server } from "./src/lib/socket.js";
 
-const app = express()
+
 configDotenv() //Load .env variables into process.env
 const PORT = process.env.PORT || 5000; 
 
@@ -28,6 +29,8 @@ app.use('/api/messages',messageRoutes)
 //Database connection
 connectToDB()
 
-app.listen(PORT, ()=>{
+
+//This explicitly creates the HTTP server using http.createServer(app) and stores it in a variable (server).
+server.listen(PORT, ()=>{
   console.log(`Server running on port ${PORT}`)
 })
