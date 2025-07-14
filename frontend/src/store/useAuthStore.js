@@ -1,6 +1,7 @@
 import { create } from "zustand";
 import { axiosInstance } from "../lib/axios";
 import toast from "react-hot-toast";
+import {io} from "socket.io-client";
 
 //Explanation:
 // Zustand expects a function that returns an object, so use (...) => ({ ... }) to return the initial state.
@@ -38,19 +39,23 @@ import toast from "react-hot-toast";
 // res.status(201).json({ message: "User created" }); // no login behavior
 // Why? Because checkAuth() will automatically detect the cookie and set authUser, which is what you don't want after signup.
 
+const BASE_URL = "http://localhost:3000";
 
-export const useAuthStore = create((set) => ({ //this objec
+export const useAuthStore = create((set,get) => ({ //this objec
   authUser: null,        // initially null
   isSigningUp:false,
   isLoggingIn:false,
-   isUpdatingProfile:false,
+  isUpdatingProfile:false,
   isCheckingAuth: true,  // initially true
   onlineUsers:[],
+  socket:null,
 
   checkAuth: async() => {
     try {
       const res= await axiosInstance.get('/auth/check')
+      console.log("✅ checkAuth success", res.data);
       set({authUser:res.data})
+      get().connectSocket(); //If you are authenticated that means we are logged in that means we should conenct to socket
     } 
     catch(error) {
       set({authUser:null})
@@ -85,6 +90,7 @@ export const useAuthStore = create((set) => ({ //this objec
        const res = await axiosInstance.post('/auth/login',formdata)
        set({authUser:res.data});
        toast.success("Logged In Successfully");
+       get().connectSocket() //After login we want to connect to socket immediately so that we are online
     } 
     catch(error) {
       console.log(error);
@@ -97,13 +103,26 @@ export const useAuthStore = create((set) => ({ //this objec
 
   logout: async()=>{
     try {
+       const socket = get().socket;
+    const userId = get().authUser?._id;
+
+    if (socket?.connected) {
+      socket.emit("manual-disconnect", userId); // Custom event
+      get().disconnectSocket();
+    }
+
        await axiosInstance.post('/auth/logout')
        set({authUser:null});
        toast.success("Logged Out Successfully");
+       
     } 
     catch (error) {
        console.log(error);
-       toast.error(error.response.data.message);
+        // Safe fallback for any kind of error
+  const message =
+    error?.response?.data?.message || error?.message || "Logout failed";
+
+  toast.error(message);
     }
   },
 
@@ -122,5 +141,25 @@ export const useAuthStore = create((set) => ({ //this objec
     finally {
     set({ isUpdatingProfile:false});
     }
+  },
+
+  connectSocket: ()=> {
+    const {authUser} = get();
+    //If user is not authenticated or already connected so return
+    if(!authUser || get().socket?.connected) return;
+    //Otherwise connect new connection for this user
+    const socket = io(BASE_URL);
+    socket.connect();
+    set({socket:socket})
+  },
+  disconnectSocket: ()=> {
+    //If you are connected then disconnect
+    const socket = get().socket;
+  if (socket?.connected) {
+    socket.disconnect();
+    console.log("disconnected bc");
+  } else {
+    console.log("Socket was already disconnected or null");
+  } 
   }
 }));

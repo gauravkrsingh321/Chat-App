@@ -12,19 +12,20 @@ import { Toaster } from "react-hot-toast";
 
 const App = () => {
   const { authUser, checkAuth, isCheckingAuth } = useAuthStore();
+  
   useEffect(() => {
     checkAuth();
   }, [checkAuth]);
+  
   console.log({ authUser });
 
-  if (isCheckingAuth && !authUser) {
+  if (isCheckingAuth && !authUser)
     return (
       <div className="flex items-center justify-center h-screen">
-        <Loader className="size-20 inline-block animate-spin" />
-        <p className="text-2xl p-4">Loading...</p>
+        <Loader className="size-10 animate-spin" />
       </div>
     );
-  }
+
 
   return (
     <div>

@@ -4,9 +4,10 @@ import User from "../models/user.model.js";
 
 export const protectRoute = async (req,res,next) => {
   try {
+      console.log("🍪 Cookies Received:", req.cookies); // <-- add this
     //extract token from request body
     const token = req.cookies.jwt;
-    console.log("Received token:", token);
+    // console.log("Received token:", token);
     if(!token) { //if token not available
       return res.status(401).json({message:" Unathourized - Token Missing"}) 
     }

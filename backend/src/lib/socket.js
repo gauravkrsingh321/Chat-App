@@ -27,6 +27,11 @@ const io = new Server(server, {
 io.on("connection", (socket)=> {  //this socket is the user that has just connected
   console.log("A user connected", socket.id);
 
+  socket.on("manual-disconnect", (userId) => {
+    console.log(`User ${userId} manually disconnected (logout). Socket ID: ${socket.id}`);
+    // Optional: update user's online status in DB
+  });
+
   socket.on("disconnect", ()=> {
     console.log("A user disconnected",socket.id)
   })
