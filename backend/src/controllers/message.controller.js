@@ -1,4 +1,5 @@
 import cloudinary from "../lib/cloudinary.js";
+import { getReceiverSocketId, io } from "../lib/socket.js";
 import Message from "../models/message.model.js";
 import User from "../models/user.model.js";
 
@@ -23,7 +24,7 @@ export const getMessages = async (req,res)=>{
     const myId = req.user._id; //currently authenticated user
 
     //find all the messages where I am the sender or other user is the sender or vice versa
-    const messages = await User.find({
+    const messages = await Message.find({
       $or:[
         {senderId:myId, receiverId:userToChatId},
         {senderId:userToChatId, receiverId:myId}
@@ -50,7 +51,16 @@ export const sendMessage = async (req,res)=>{
     }
 
     const newMessage = await Message.create({senderId,receiverId,text,image:imageUrl});
-    //todo later: realtime functionality goes here => socket.io
+
+    
+    const receiverSocketId = getReceiverSocketId(receiverId);
+    //If user is online then send the message,send the event in real time
+    if(receiverSocketId) {
+      //Since its private 1-1 chat thats why we only send it to receiver
+      io.to(receiverSocketId).emit("newMessage", newMessage);
+    }
+
+
     res.status(201).json(newMessage);
   } 
   catch (error) {
