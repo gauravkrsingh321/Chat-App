@@ -29,6 +29,12 @@ const ChatContainer = () => {
     }
   }, [selectedUser?._id, getMessages, subscribeToMessages, unsubscribeFromMessages]);
 
+   useEffect(() => {
+    if (messageEndRef.current && messages) {
+      messageEndRef.current.scrollIntoView({ behavior: "smooth" });
+    }
+  }, [messages]);
+
   if (isMessagesLoading) {
     return (
       <div className="flex-1 flex flex-col overflow-auto">
@@ -75,8 +81,8 @@ const ChatContainer = () => {
               <div
                 className={`chat-bubble flex flex-col rounded-xl shadow-md p-3 ${
                   isSender
-                    ? "bg-blue-500 text-white"
-                    : "bg-gray-200 text-black"
+                    ? "bg-green-700 text-white"
+                    : "bg-black-900 text-white"
                 }`}
               >
                 {message.image && (
