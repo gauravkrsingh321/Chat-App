@@ -55,6 +55,7 @@ export const useChatStore = create((set,get)=> ({
 
     const socket = useAuthStore.getState().socket;
     socket.on("newMessage", (newMessage)=>{
+      if(newMessage.senderId !== selectedUser._id) return; //Avoids condition when u send a message to selected user from your caht but it get sends to another user instead of user u wanted to sent initially
       set({messages:[...get().messages,newMessage]})
     })
   },
@@ -64,6 +65,6 @@ export const useChatStore = create((set,get)=> ({
     socket.off("newMessage");
   },
 
-  //todo: optimize this one later
+
   setSelectedUser: (selectedUser)=> set({selectedUser})
 }))
