@@ -25,6 +25,10 @@ app.use(express.urlencoded({ extended: true, limit: '10mb' })); //Handles Conten
 // If you're building a REST API where the frontend sends JSON, express.json() is enough.
 // If you also accept data from HTML forms (e.g. login forms, file uploads), you need express.urlencoded().
 
+app.use('/api/auth',authRoutes)
+app.use('/api/messages',messageRoutes)
+
+// Serve frontend **after** API routes
 if(process.env.NODE_ENV === "production") {
   app.use(express.static(path.join(__dirname, "../frontend/dist")));
 
@@ -33,8 +37,6 @@ if(process.env.NODE_ENV === "production") {
   })
 }
 
-app.use('/api/auth',authRoutes)
-app.use('/api/messages',messageRoutes)
 
 //Database connection
 connectToDB()
