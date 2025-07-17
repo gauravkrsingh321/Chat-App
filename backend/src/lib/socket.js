@@ -31,10 +31,15 @@ io.on("connection", (socket)=> {  //this socket is the user that has just connec
   console.log("A user connected", socket.id);
 
   const userId = socket.handshake.query.userId;
-  if(userId) {
-    userSocketMap[userId] = socket.id;
-    socket.userId = userId;
+  
+  // ✅ Fix: guard against missing or invalid userId
+  if (!userId || userId === 'undefined' || userId === 'null') {
+    console.warn("Invalid userId in socket connection:", userId);
+    socket.disconnect(); // optional: reject the connection
+    return;
   }
+  userSocketMap[userId] = socket.id;
+  socket.userId = userId;
 
   //io.emit() is used to send events to all the connected clients
   io.emit("getOnlineUsers", Object.keys(userSocketMap))
