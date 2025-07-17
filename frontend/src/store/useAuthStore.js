@@ -3,45 +3,9 @@ import { axiosInstance } from "../lib/axios";
 import toast from "react-hot-toast";
 import {io} from "socket.io-client";
 
-//Explanation:
-// Zustand expects a function that returns an object, so use (...) => ({ ... }) to return the initial state.
-// set (not setter) is conventional, and used to update the state.
-// 1. authUser: null
-// Purpose: This stores the currently authenticated user.
-// Initially set to null because no user is logged in when the app starts.
-// Example use case: Once you fetch the user data (e.g., after verifying a token), you update it to something like:
-// { name: "Gaurav", email: "gaurav@example.com" }
-// 2. isCheckingAuth: true
-// Purpose: This flag tracks whether your app is still checking if the user is authenticated.
-// Initially set to true because when the app loads, it may need to check local storage or make an API call to verify the user's session.
-// Once checking is done, you set it to false — no matter whether the user is logged in or not.
-// Example Scenario:
-//(1) App loads:
-// authUser = null
-// isCheckingAuth = true
-//(2) App checks localStorage or API:
-// If user is found:
-// authUser = { id: 1, name: "Gaurav" }
-// isCheckingAuth = false
-// If user is not found or token is invalid:
-// authUser = null
-// isCheckingAuth = false
+const BASE_URL = import.meta.env.MODE === "development" ? "http://localhost:3000" : "/";
 
-
-//authUser is a state variable in your Zustand store that holds information about the currently logged-in user.
-//Example: authUser = {
-//   id: "123",
-//   name: "Gaurav",
-//   email: "gaurav@example.com",
-//   token: "..." // if returned from backend
-// }
-// ❌ DO NOT send res.cookie('token', token) in signup controller
-// res.status(201).json({ message: "User created" }); // no login behavior
-// Why? Because checkAuth() will automatically detect the cookie and set authUser, which is what you don't want after signup.
-
-const BASE_URL = "http://localhost:3000";
-
-export const useAuthStore = create((set,get) => ({ //this objec
+export const useAuthStore = create((set,get) => ({ 
   authUser: null,        // initially null
   isSigningUp:false,
   isLoggingIn:false,
@@ -55,7 +19,7 @@ export const useAuthStore = create((set,get) => ({ //this objec
       const res= await axiosInstance.get('/auth/check')
       console.log("✅ checkAuth success", res.data);
       set({authUser:res.data})
-      get().connectSocket(); //If you are authenticated that means we are logged in that means we should conenct to socket
+      get().connectSocket(); //If you are authenticated that means we are logged in that means we should connect to socket
     } 
     catch(error) {
       set({authUser:null})

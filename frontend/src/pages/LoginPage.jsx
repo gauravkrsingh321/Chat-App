@@ -50,7 +50,7 @@ const LoginPage = () => {
                 <Input
                   typeOfInput="email"
                   className={`input input-bordered w-full pl-10`}
-                  placeholderValue="you@example.com"
+                  placeholderValue="rock@example.com"
                   value={formData.email}
                   changeHandler={(e) => setFormData({ ...formData, email: e.target.value })}
                 />
